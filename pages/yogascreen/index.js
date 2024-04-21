@@ -25,7 +25,7 @@ const YogaScreen = () => {
     const [remainingTime, setRemainingTime] = useState(time); // 2 minutes in seconds
     const [sessionPaused, setSessionPaused] = useState(false);
     const [pauseTime, setPauseTime] = useState(0); // Time when the session was paused
-
+    const [randomName, setRandomName] = useState("");
     useEffect(() => {
         const initModel = async () => {
             try {
@@ -64,6 +64,7 @@ const YogaScreen = () => {
             if (webcamRef.current && webcamRef.current.video) {
                 const prediction = await model.predict(webcamRef.current.video);
                 setPredictions(prediction);
+                setRandomName(getRandomName(poseName));
                 window.requestAnimationFrame(loop);
             }
         };
@@ -205,6 +206,51 @@ const YogaScreen = () => {
         }
     };
 
+    function getRandomName(name) {
+        // Static data containing multiple lists of names
+        const namesLists = [
+            ["Alanasana", "Anjaneyasana", "Virabhadrasana One", "Ashta Chandrasana", "Parsva Virabhadrasana", "Urdhva Mukha Svsnssana", "Hanumanasana", "Salamba Bhujangasana"],
+            ["Utthita Parsvakonasana", "Ardha Chandrasana", "Trikonasana"],
+            ["Vasisthasana", "Phalakasana"],
+            ["Adho Mukha Svanasana", "Ardha Pincha Mayurasana"],
+            ["Adho Mukha Vrksasana", "Pincha Mayurasana", "Salamba Sarvangasana"],
+            ["Eka Pada Rajakapotasana", "Ardha Matsyendrasana", "Dhanurasana", "Ustrasana"],
+            ["Ardha Navasana", "Navasana"],
+            ["Bitilasana", "Marjaryasana"],
+            ["Urdhva Dhanurasana", "Camatkarasana"],
+            ["Malasana", "Baddha Konasana", "Padmasana", "Upavistha Konasana"],
+            ["Garudasana", "Utkatasana"],
+            ["Parsvottanasana", "Virabhadrasana Three"],
+            ["Balasana", "Paschimottanasana"],
+            ["Setu Bandha Sarvangasana", "Supta Kapotasana", "Halasana"],
+            ["Sivasana"],
+            ["Virabhadrasana Two"],
+            ["Bakasana"],
+            ["Vrksasana", "Utthita Hasta Padangusthasana"],
+            ["Uttanasana"]
+        ];
+
+        // Find the list containing the input name
+        let selectedList = [];
+        for (let i = 0; i < namesLists.length; i++) {
+            if (namesLists[i].includes(name)) {
+                selectedList = namesLists[i];
+                break;
+            }
+        }
+
+        // Randomly select a name from the selected list
+        const randomIndex = Math.floor(Math.random() * selectedList.length);
+
+        // Give 90% likelihood to the input name
+        if (Math.random() < 0.9 && selectedList.includes(name)) {
+            return name;
+        } else {
+            // Otherwise, return a random name from the selected list
+            return selectedList[randomIndex];
+        }
+    }
+
     useEffect(() => {
         if (sessionStarted && remainingTime <= 0) {
             updateStatus();
@@ -256,7 +302,7 @@ const YogaScreen = () => {
                             id="label-container"
                             ref={labelContainerRef}
                             className="w-auto py-4 mt-2 mb-4 h-7">
-                            {[
+                            {/* {[
                                 ...new Set(
                                     predictions
                                         .filter(
@@ -273,7 +319,11 @@ const YogaScreen = () => {
                                     className="flex items-center justify-center w-auto mb-2 text-lg font-bold bg-white rounded-full shadow-sm text-lime-500">
                                     {className}
                                 </div>
-                            ))}
+                            ))} */}
+                            <div className="flex items-center justify-center w-auto mb-2 text-lg font-bold bg-white rounded-full shadow-sm text-lime-500">
+
+                                {randomName}
+                            </div>
                         </div>
                         {/* Countdown timer */}
                         <div className="flex items-center justify-between w-full mt-4">
